@@ -6,19 +6,22 @@ class UiView{
   private int _sensorRawValueX = 100;
   private int _sensorStartValueX = 140;
   private int _sensorDeltaValueX = 180;
+  private int _midiNoteX = 220;
   private Rectangle rSerial;
   private Rectangle rSensors;
   private Rectangle rCalibrate;
   private SerialManager _serial;
   private SensorManager _sensors;
+  private MidiManager _midi;
   private boolean bOverBoard = false;
   private boolean bOverCalibrate = false;
   
-  UiView(int w, int h, SerialManager sm, SensorManager ssm){
+  UiView(int w, int h, SerialManager sm, SensorManager ssm, MidiManager mm){
     _width = w;
     _height = h;
     _serial = sm;
     _sensors = ssm;
+    _midi = mm;
     
     rSerial= new Rectangle(0,0, _width, 40);
     rSensors = new Rectangle(0, rSerial.GetMaxY(), _width, _height-rSerial.GetMaxY());
@@ -67,6 +70,7 @@ class UiView{
     text("raw", _sensorRawValueX, textY);
     text("start", _sensorStartValueX, textY);
     text("delta", _sensorDeltaValueX, textY);
+    text("note", _midiNoteX, textY);
   }
   
   void drawSensorGrid(){
@@ -77,6 +81,8 @@ class UiView{
     x = _sensorStartValueX-10;
     line(x, rSensors.y, x, rSensors.GetMaxY());
     x = _sensorDeltaValueX-10;
+    line(x, rSensors.y, x, rSensors.GetMaxY());
+    x = _midiNoteX-10;
     line(x, rSensors.y, x, rSensors.GetMaxY());
   }
   
@@ -96,7 +102,15 @@ class UiView{
     if(sd!=null){
       text(sd.sensorValue, _sensorRawValueX, textY);
       text(sd.startValue, _sensorStartValueX, textY);
-      text(sd.GetDeltaValue(), _sensorDeltaValueX, textY);
+      text(sd.GetLastDeltaValue(), _sensorDeltaValueX, textY);
+      MidiString ms = _midi.GetMidiString(sId);
+      if(ms!=null){
+        text(ms.GetNoteName(), _midiNoteX, textY);
+      }
+      if(sd.IsTriggered()){
+        fill(0,255,0, 100);
+        rect(_sensorDeltaValueX-10, y, 40, _sensorH);
+      }
     }
   }
   

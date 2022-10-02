@@ -2,6 +2,7 @@ class SensorData{
   int sensorId = -1;
   int sensorValue = -1;
   int startValue = -1;
+  int threshold = 20;
   private int _lastDelta = 0;
   
   SensorData(){}
@@ -31,12 +32,19 @@ class SensorData{
   }
   
   int GetLastDeltaValue(){return _lastDelta;}
+  
+  boolean IsTriggered(){
+    return (_lastDelta>threshold);
+  }
 }
 
 class SensorManager{
+  private MidiManager _midi;
   private ArrayList<SensorData> _values = new ArrayList<SensorData>();
   
-  SensorManager(){}
+  SensorManager(MidiManager midi){
+    _midi = midi;
+  }
   
   
   int GetNumSensors(){ return _values.size();}
@@ -55,6 +63,10 @@ class SensorManager{
       _values.get(sd.sensorId).InitValue(sd.sensorValue);
     }else{
       _values.get(sd.sensorId).UpdateValue(sd.sensorValue);
+    }
+    MidiString ms = _midi.GetMidiString(sd.sensorId);
+    if(ms!=null){
+      ms.SetNoteTriggered(sd.IsTriggered());
     }
   }
   
