@@ -14,3 +14,7 @@ The circuit is fairly easy:
 ![The circuit](./flexSensorCirctuit.svg)
 
 When you have your circuit ready, just upload the `.ino` file in the `arduino` folder to your board.
+
+## The software
+The software is a simple `Processing` sketch, meaning it runs everywhere and can be easily modified on the fly.
+The source code is in the `processing` folder.
