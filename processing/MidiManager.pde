@@ -5,6 +5,8 @@ class MidiString{
   private String _noteName = "";
   private boolean _noteTriggered = false;
   private MidiBus _midi;
+  int _lastNoteStateChange = 0;
+  int _minNoteStateChangeTime = 100;
   
   MidiString(){}
   
@@ -16,6 +18,7 @@ class MidiString{
   void MakeNote(int chan, int freq, int vel){
     _note = new Note(chan, freq, vel);
     _noteName = _note.name()+_note.octave();
+    _lastNoteStateChange = millis();
   }
   
   void LinkMidi(MidiBus midi){
@@ -25,18 +28,24 @@ class MidiString{
   String GetNoteName(){return _noteName;}
   
   void SetNoteTriggered(boolean b){
-    println(b);
     if(b==_noteTriggered)return;
+    if(!DidEnoughTimePassSinceLastNoteStateChange())return;
     _noteTriggered = b;
     if(_midi!=null){
       if(_noteTriggered){
         _midi.sendNoteOn(_note);
         println(_noteName+" ON");
+        _lastNoteStateChange = millis();
       }else{
         _midi.sendNoteOff(_note);
         println(_noteName+" OFF");
+        _lastNoteStateChange = millis();
       }
     }
+  }
+  
+  private boolean DidEnoughTimePassSinceLastNoteStateChange(){
+    return(millis()-_lastNoteStateChange)>_minNoteStateChangeTime;
   }
   
   boolean IsTriggered(){return _noteTriggered;}

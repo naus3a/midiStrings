@@ -18,6 +18,10 @@ void mousePressed(){
   ui.OnMousePressed(mouseX, mouseY);
 }
 
+void mouseReleased(){
+  ui.OnMouseReleased();
+}
+
 void mouseMoved(){
   ui.OnMouseMoved(mouseX, mouseY);
 }

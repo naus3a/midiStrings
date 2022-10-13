@@ -7,6 +7,7 @@ class UiView{
   private int _sensorStartValueX = 140;
   private int _sensorDeltaValueX = 180;
   private int _midiNoteX = 220;
+  private int _noteClicked = -1;
   private Rectangle rSerial;
   private Rectangle rSensors;
   private Rectangle rCalibrate;
@@ -119,11 +120,53 @@ class UiView{
     }
   }
   
+  private Rectangle GetNoteRectangle(int sId){
+    Rectangle r = new Rectangle();
+    r.x = _midiNoteX;
+    r.y = rSensors.y+((sId+1)*_sensorH);
+    r.width = 40;
+    r.height = _sensorH;
+    return r;
+  }
+  
+  void OnNotesPressed(int mx, int my){
+    _noteClicked = -1;
+    for(int i=0;i<_sensors.GetNumSensors();i++){
+      if(OnNotePressed(i, mx, my))return;
+    }
+  }
+  
+  boolean OnNotePressed(int sId, int mx, int my){
+    Rectangle r = GetNoteRectangle(sId);
+    if(r.IsInside(mx,my)){
+      MidiString ms = _midi.GetMidiString(sId);
+      if(ms!=null){
+        ms.SetNoteTriggered(true);
+        _noteClicked = sId;
+      }
+      return true;
+    }else{
+      return false;
+    }
+  }
+  
   void OnMousePressed(int mx, int my){
     if(rSerial.IsInside(mx,my)){
       _serial.AutoConnect();
     }else if(rCalibrate.IsInside(mx,my)){
       _sensors.Calibrate();
+    }else{
+      OnNotesPressed(mx, my);
+    }
+  }
+  
+  void OnMouseReleased(){
+    if(_noteClicked>=0){
+      MidiString ms = _midi.GetMidiString(_noteClicked);
+      if(ms!=null){
+        ms.SetNoteTriggered(false);
+      }
+      _noteClicked = -1;
     }
   }
   

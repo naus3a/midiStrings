@@ -58,15 +58,21 @@ class SensorManager{
   
   void Update(SensorData sd){
     if(sd==null)return;
+    boolean oldTriggered = false;
     boolean bNew = expandSensorsIfNeeded(sd);
     if(bNew){
       _values.get(sd.sensorId).InitValue(sd.sensorValue);
     }else{
+      oldTriggered = _values.get(sd.sensorId).IsTriggered();
       _values.get(sd.sensorId).UpdateValue(sd.sensorValue);
     }
-    MidiString ms = _midi.GetMidiString(sd.sensorId);
-    if(ms!=null){
-      ms.SetNoteTriggered(sd.IsTriggered());
+    boolean newTriggered = _values.get(sd.sensorId).IsTriggered();
+    
+    if(oldTriggered!=newTriggered){
+      MidiString ms = _midi.GetMidiString(sd.sensorId);
+      if(ms!=null){
+        ms.SetNoteTriggered(_values.get(sd.sensorId).IsTriggered());
+      }
     }
   }
   
