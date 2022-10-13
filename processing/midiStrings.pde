@@ -1,4 +1,4 @@
-MidiManager midiManager = new MidiManager();
+MidiManager midiManager = new MidiManager(this);
 SensorManager sensorManager = new SensorManager(midiManager);
 SerialManager serialManager = new SerialManager(this, sensorManager);
 UiView ui;

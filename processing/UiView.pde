@@ -106,6 +106,11 @@ class UiView{
       MidiString ms = _midi.GetMidiString(sId);
       if(ms!=null){
         text(ms.GetNoteName(), _midiNoteX, textY);
+        if(ms.IsTriggered()){
+          fill(0,255,0, 100);
+          rect(_midiNoteX-10, y, 40, _sensorH);
+          noFill();
+        }
       }
       if(sd.IsTriggered()){
         fill(0,255,0, 100);

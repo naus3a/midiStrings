@@ -85,6 +85,7 @@ class SerialManager{
     // so we're expecting:
     // 2bytes+1byte+2bytes
     String msg = "";
+    if(_serial==null)return;
     while(_serial.available()>0){
       char c = (char)_serial.read();
       if(c=='\n'){
