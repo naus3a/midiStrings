@@ -18,3 +18,7 @@ When you have your circuit ready, just upload the `.ino` file in the `arduino` f
 ## The software
 The software is a simple `Processing` sketch, meaning it runs everywhere and can be easily modified on the fly.
 The source code is in the `processing` folder.
+It supports:
+* `midi` out 
+* `osc` out, for broadcasting data to other computers on the same network.
+In case you're using `osc`, you can use the `midiStringsOscBridge`application on your receiving computer to go back to `midi`.
