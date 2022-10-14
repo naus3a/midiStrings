@@ -1,4 +1,6 @@
 import themidibus.*;
+import oscP5.*;
+import netP5.*;
 
 class MidiString{
   private Note _note;
@@ -56,16 +58,26 @@ class MidiString{
 class MidiManager{
   private PApplet _parent;
   private MidiBus _midi;
+  private OscP5 _osc;
+  private NetAddress _netOut;
   private ArrayList<MidiString> _midiStrings = new ArrayList<MidiString>();
   private boolean _bMidiActive = true;
+  private boolean _bOscActive = true;
+  
+  private final String _midiOutDevice = "Bus 1";
+  private final int _oscPortOut = 12345;
+  private final int _oscPortIn = 12344;
   
   MidiManager(PApplet parent){
     _parent = parent;
     MidiBus.list();
-    _midi = new MidiBus(_parent, -1, "Bus 1");
+    _midi = new MidiBus(_parent, -1, _midiOutDevice);
     
     _midiStrings.add(new MidiString(1,1,127, this));
     _midiStrings.add(new MidiString(1,2,127, this));
+    
+    _osc = new OscP5(_parent, _oscPortIn);
+    _netOut = new NetAddress("255.255.255.255", _oscPortOut);
   }
   
   MidiString GetMidiString(int mId){
@@ -74,20 +86,61 @@ class MidiManager{
   }
   
   boolean IsMidiActive(){return _bMidiActive;}
+  boolean IsOscActive(){return _bOscActive;}
   
   void SetMidiActive(boolean b){_bMidiActive=b;}
   void ToggleMidiActive(){SetMidiActive(!IsMidiActive());}
+  void SetOscActive(boolean b){_bOscActive=b;}
+  void ToggleOscActive(){SetOscActive(!IsOscActive());}
   
   boolean SendNoteOn(Note n){
+    boolean bMidi = SendMidiNoteOn(n);
+    boolean bOsc = SendOscNote(n, true);
+    return (bMidi||bOsc);
+  }
+  
+  boolean SendNoteOff(Note n){
+    boolean bMidi = SendMidiNoteOff(n);
+    boolean bOsc = SendOscNote(n, false);
+    return (bMidi||bOsc);
+  }
+  
+  boolean SendMidiNoteOn(Note n){
     if(!IsMidiActive())return false;
     _midi.sendNoteOn(n);
     return true;
   }
   
-  boolean SendNoteOff(Note n){
+  boolean SendMidiNoteOff(Note n){
     if(!IsMidiActive())return false;
     _midi.sendNoteOff(n);
     return true;
+  }
+  
+  boolean SendOsc(OscMessage msg){
+    if(!IsOscActive())return false;
+    _osc.send(msg, _netOut);
+    return true;
+  }
+  
+  boolean SendOscNote(Note n, boolean noteOn){
+    if(!IsOscActive())return false;
+    return SendOsc(makeOscNoteMessage(n, noteOn));
+  }
+  
+  private OscMessage makeOscMessage(String addr){
+    OscMessage msg = new OscMessage(addr);
+    return msg;
+  }
+  
+  private OscMessage makeOscNoteMessage(Note n, boolean noteOn){
+    String addr = "NoteOn";
+    if(!noteOn)addr = "NoteOff";
+    OscMessage msg = makeOscMessage(addr);
+    msg.add(n.channel);
+    msg.add(n.pitch);
+    msg.add(n.velocity);
+    return msg;
   }
   
   void TestNoteOn(){
@@ -96,5 +149,9 @@ class MidiManager{
   
   void TestNoteOff(){
     SendNoteOff(new Note(1,440,127));
+  }
+  
+  void TestOscSend(){
+    //SendOsc("/test");
   }
 }
