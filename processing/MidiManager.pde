@@ -4,13 +4,13 @@ class MidiString{
   private Note _note;
   private String _noteName = "";
   private boolean _noteTriggered = false;
-  private MidiBus _midi;
+  private MidiManager _midi;
   int _lastNoteStateChange = 0;
   int _minNoteStateChangeTime = 100;
   
   MidiString(){}
   
-  MidiString(int chan, int freq, int vel, MidiBus midi){
+  MidiString(int chan, int freq, int vel, MidiManager midi){
     MakeNote(chan, freq, vel);
     LinkMidi(midi);
   }
@@ -21,7 +21,7 @@ class MidiString{
     _lastNoteStateChange = millis();
   }
   
-  void LinkMidi(MidiBus midi){
+  void LinkMidi(MidiManager midi){
     _midi = midi;
   }
   
@@ -33,13 +33,15 @@ class MidiString{
     _noteTriggered = b;
     if(_midi!=null){
       if(_noteTriggered){
-        _midi.sendNoteOn(_note);
-        println(_noteName+" ON");
-        _lastNoteStateChange = millis();
+        if(_midi.SendNoteOn(_note)){
+          println(_noteName+" ON");
+          _lastNoteStateChange = millis();
+        }
       }else{
-        _midi.sendNoteOff(_note);
-        println(_noteName+" OFF");
-        _lastNoteStateChange = millis();
+        if(_midi.SendNoteOff(_note)){
+          println(_noteName+" OFF");
+          _lastNoteStateChange = millis();
+        }
       }
     }
   }
@@ -55,14 +57,15 @@ class MidiManager{
   private PApplet _parent;
   private MidiBus _midi;
   private ArrayList<MidiString> _midiStrings = new ArrayList<MidiString>();
+  private boolean _bMidiActive = true;
   
   MidiManager(PApplet parent){
     _parent = parent;
     MidiBus.list();
     _midi = new MidiBus(_parent, -1, "Bus 1");
     
-    _midiStrings.add(new MidiString(1,1,127, _midi));
-    _midiStrings.add(new MidiString(1,2,127,_midi));
+    _midiStrings.add(new MidiString(1,1,127, this));
+    _midiStrings.add(new MidiString(1,2,127, this));
   }
   
   MidiString GetMidiString(int mId){
@@ -70,11 +73,28 @@ class MidiManager{
     return _midiStrings.get(mId);
   }
   
-  public void TestOn(){
-    _midi.sendNoteOn(new Note(1,440,127));
+  boolean IsMidiActive(){return _bMidiActive;}
+  
+  void SetMidiActive(boolean b){_bMidiActive=b;}
+  void ToggleMidiActive(){SetMidiActive(!IsMidiActive());}
+  
+  boolean SendNoteOn(Note n){
+    if(!IsMidiActive())return false;
+    _midi.sendNoteOn(n);
+    return true;
   }
   
-  public void TestOff(){
-    _midi.sendNoteOff(new Note(1,440,127));
+  boolean SendNoteOff(Note n){
+    if(!IsMidiActive())return false;
+    _midi.sendNoteOff(n);
+    return true;
+  }
+  
+  void TestNoteOn(){
+    SendNoteOn(new Note(1,440,127));
+  }
+  
+  void TestNoteOff(){
+    SendNoteOff(new Note(1,440,127));
   }
 }
