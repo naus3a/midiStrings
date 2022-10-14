@@ -13,6 +13,7 @@ class UiView{
   private Rectangle rCalibrate;
   private Rectangle rFooter;
   private Rectangle rMidiActive;
+  private Rectangle rOscActive;
   private SerialManager _serial;
   private SensorManager _sensors;
   private MidiManager _midi;
@@ -31,6 +32,7 @@ class UiView{
     rCalibrate = new Rectangle(_sensorStartValueX-10, rSensors.y, 40, _sensorH);
     rFooter = new Rectangle(0, _height-40, _width, 40);
     rMidiActive = new Rectangle(rFooter.x, rFooter.y, 80, rFooter.height);
+    rOscActive = new Rectangle(rMidiActive.GetMaxX(), rFooter.y, 80, rFooter.height);
   }
   
   void Draw(){
@@ -68,6 +70,14 @@ class UiView{
     rMidiActive.Draw();
     fill(255);
     text("MIDI", rMidiActive.x+20, rMidiActive.y+20);
+    if(_midi.IsOscActive()){
+      fill(0,255,0, 50);
+    }else{
+      fill(255,0,0,50);
+    }
+    rOscActive.Draw();
+    fill(255);
+    text("OSC", rOscActive.x+20, rOscActive.y+20);
   }
   
   private void drawSensors(){
@@ -176,6 +186,8 @@ class UiView{
       _sensors.Calibrate();
     }else if(rMidiActive.IsInside(mx,my)){
       _midi.ToggleMidiActive();
+    }else if(rOscActive.IsInside(mx,my)){
+      _midi.ToggleOscActive();
     }else{
       OnNotesPressed(mx, my);
     }

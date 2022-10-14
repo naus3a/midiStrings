@@ -25,7 +25,3 @@ void mouseReleased(){
 void mouseMoved(){
   ui.OnMouseMoved(mouseX, mouseY);
 }
-
-void keyPressed(){
-  if(key=='a')midiManager.TestOscSend();
-}

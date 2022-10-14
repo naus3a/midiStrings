@@ -150,8 +150,4 @@ class MidiManager{
   void TestNoteOff(){
     SendNoteOff(new Note(1,440,127));
   }
-  
-  void TestOscSend(){
-    //SendOsc("/test");
-  }
 }
