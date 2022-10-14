@@ -6,7 +6,7 @@ UiView ui;
 void setup(){
   size(300, 300);
   serialManager.AutoConnect();
-  ui = new UiView(300,720, serialManager, sensorManager, midiManager);
+  ui = new UiView(width,height, serialManager, sensorManager, midiManager);
 }
 
 void draw(){

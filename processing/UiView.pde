@@ -11,6 +11,8 @@ class UiView{
   private Rectangle rSerial;
   private Rectangle rSensors;
   private Rectangle rCalibrate;
+  private Rectangle rFooter;
+  private Rectangle rMidiActive;
   private SerialManager _serial;
   private SensorManager _sensors;
   private MidiManager _midi;
@@ -27,14 +29,17 @@ class UiView{
     rSerial= new Rectangle(0,0, _width, 40);
     rSensors = new Rectangle(0, rSerial.GetMaxY(), _width, _height-rSerial.GetMaxY());
     rCalibrate = new Rectangle(_sensorStartValueX-10, rSensors.y, 40, _sensorH);
+    rFooter = new Rectangle(0, _height-40, _width, 40);
+    rMidiActive = new Rectangle(rFooter.x, rFooter.y, 80, rFooter.height);
   }
   
   void Draw(){
     drawSerialStatus();
     drawSensors();
+    drawFooter();
   }
   
-  void drawSerialStatus(){
+  private void drawSerialStatus(){
     noStroke();
     fill(0);
     rSerial.Draw();
@@ -51,7 +56,21 @@ class UiView{
     }
   }
   
-  void drawSensors(){
+  private void drawFooter(){
+    noStroke();
+    fill(0);
+    rFooter.Draw();
+    if(_midi.IsMidiActive()){
+      fill(0,255,0, 50);
+    }else{
+      fill(255,0,0,50);
+    }
+    rMidiActive.Draw();
+    fill(255);
+    text("MIDI", rMidiActive.x+20, rMidiActive.y+20);
+  }
+  
+  private void drawSensors(){
     drawSensorsHeader();
     for(int i=0;i<_sensors.GetNumSensors();i++){
       drawSensor(i);
@@ -63,7 +82,7 @@ class UiView{
     }
   }
   
-  void drawSensorsHeader(){
+  private void drawSensorsHeader(){
     fill(100);
     rect(0, rSensors.y, _width, _sensorH);
     float textY = _sensorH+20;
@@ -74,7 +93,7 @@ class UiView{
     text("note", _midiNoteX, textY);
   }
   
-  void drawSensorGrid(){
+  private void drawSensorGrid(){
     noFill();
     stroke(150);
     float x = _sensorRawValueX-20;
@@ -87,7 +106,7 @@ class UiView{
     line(x, rSensors.y, x, rSensors.GetMaxY());
   }
   
-  void drawSensor(int sId){
+  private void drawSensor(int sId){
     noStroke();
     if(sId%2==0){
       fill(50);
@@ -155,6 +174,8 @@ class UiView{
       _serial.AutoConnect();
     }else if(rCalibrate.IsInside(mx,my)){
       _sensors.Calibrate();
+    }else if(rMidiActive.IsInside(mx,my)){
+      _midi.ToggleMidiActive();
     }else{
       OnNotesPressed(mx, my);
     }
