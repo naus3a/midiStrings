@@ -134,8 +134,8 @@ class MidiManager{
   }
   
   private OscMessage makeOscNoteMessage(Note n, boolean noteOn){
-    String addr = "NoteOn";
-    if(!noteOn)addr = "NoteOff";
+    String addr = "/NoteOn";
+    if(!noteOn)addr = "/NoteOff";
     OscMessage msg = makeOscMessage(addr);
     msg.add(n.channel);
     msg.add(n.pitch);
