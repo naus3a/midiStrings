@@ -62,6 +62,7 @@ class MidiManager{
   private MidiBus _midi;
   private OscP5 _osc;
   private NetAddress _netOut;
+  private NetAddress _netMadMapper;
   private ArrayList<MidiString> _midiStrings = new ArrayList<MidiString>();
   private boolean _bMidiActive = true;
   private boolean _bOscActive = true;
@@ -70,6 +71,13 @@ class MidiManager{
   private final int _oscPortOut = 12345;
   private final int _oscPortIn = 12344;
   
+  private float _noiseParam = 0;
+  private float _minNoise = 0.001;
+  private float _maxNoise = 0.1;
+  private float _curNoise = _minNoise;
+  private boolean _bNoise = false;
+  
+  
   MidiManager(PApplet parent){
     _parent = parent;
     MidiBus.list();
@@ -77,6 +85,7 @@ class MidiManager{
     
     _osc = new OscP5(_parent, _oscPortIn);
     _netOut = new NetAddress("255.255.255.255", _oscPortOut);
+    _netMadMapper = new NetAddress("127.0.0.1", 8010);
   }
   
   void MakeMidiStrings(int numStrings, boolean incrementChannel, boolean incrementNote, int startChannel, int startNote){
@@ -160,5 +169,26 @@ class MidiManager{
   
   void TestNoteOff(){
     SendNoteOff(new Note(1,440,127));
+  }
+  
+  void UpdateMadMapper(){
+    if(!_bNoise)return;
+    _noiseParam = noise(millis()*_curNoise);
+    
+    OscMessage msg = new OscMessage("/medias/Clouds/Contrast");
+    msg.add(_noiseParam);
+    _osc.send(msg, _netMadMapper);
+  }
+  
+  float GetNoiseParam(){return _noiseParam;}
+  
+  void SetNoiseSpeed(float ns){_curNoise = nv;}
+  
+  float GetNoiseSpeed(){return _curNoise;}
+  float GetMinNoiseSpeed(){return _minNoise;}
+  float GetMaxNoiseSpeed(){return _maxNoise;}
+  
+  void ToggleNoiseParam(){
+    _bNoise = !_bNoise;
   }
 }

@@ -16,6 +16,7 @@ void draw(){
   serialManager.Update();
   sensorManager.UpdateWatchDog();
   ui.Draw();
+  midiManager.UpdateMadMapper();
 }
 
 void mousePressed(){
@@ -28,4 +29,8 @@ void mouseReleased(){
 
 void mouseMoved(){
   ui.OnMouseMoved(mouseX, mouseY);
+}
+
+void keyPressed(){
+  ui.KeyPressed(key);
 }

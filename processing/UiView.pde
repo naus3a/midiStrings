@@ -1,4 +1,9 @@
 class UiView{
+  private float noiseR;
+  private float noiseCtrY;
+  private float noiseStart;
+  private float noiseStop;
+  private float noiseRange;
   private int _width = 300;
   private int _height = 720;
   private int _sensorH = 40;
@@ -15,6 +20,7 @@ class UiView{
   private Rectangle rFooter;
   private Rectangle rMidiActive;
   private Rectangle rOscActive;
+  private Rectangle rNoise;
   private SerialManager _serial;
   private SensorManager _sensors;
   private MidiManager _midi;
@@ -34,12 +40,20 @@ class UiView{
     rFooter = new Rectangle(0, _height-40, _width, 40);
     rMidiActive = new Rectangle(rFooter.x, rFooter.y, 80, rFooter.height);
     rOscActive = new Rectangle(rMidiActive.GetMaxX(), rFooter.y, 80, rFooter.height);
+    rNoise = new Rectangle(rOscActive.GetMaxX(), rFooter.y, rFooter.width-rOscActive.width-rMidiActive.width, rFooter.height);
+    
+    noiseR = rNoise.height/2;
+    noiseCtrY = rNoise.y+rNoise.height/2;
+    noiseStart = rNoise.x + noiseR;
+    noiseStop = rNoise.GetMaxX()-noiseR;
+    noiseRange = noiseStop-noiseStart;
   }
   
   void Draw(){
     drawSerialStatus();
     drawSensors();
     drawFooter();
+    drawNoise(_midi.GetNoiseParam());
   }
   
   private void drawSerialStatus(){
@@ -154,6 +168,20 @@ class UiView{
     }
   }
   
+  void drawNoise(float pct){
+    float x = map(pct, 0,1, noiseStart, noiseStop);
+    push();
+    noFill();
+    stroke(255);
+    rect(rNoise.x, rNoise.y, rNoise.width, rNoise.height);
+    noStroke();
+    fill(255,255,255,50);
+    rect(rNoise.x, rNoise.y, map(_midi.GetNoiseSpeed(), _midi.GetMinNoiseSpeed(), _midi.GetMaxNoiseSpeed(), 0, rNoise.width) ,rNoise.height);
+    fill(255,255,255,100);
+    ellipse(x,noiseCtrY, noiseR,noiseR);
+    pop();
+  }
+  
   private Rectangle GetNoteRectangle(int sId){
     Rectangle r = new Rectangle();
     r.x = _midiNoteX;
@@ -193,6 +221,9 @@ class UiView{
       _midi.ToggleMidiActive();
     }else if(rOscActive.IsInside(mx,my)){
       _midi.ToggleOscActive();
+    }else if(rNoise.IsInside(mx,my)){
+      float nv = map(mx, rNoise.x, rNoise.GetMaxX(), _midi.GetMinNoiseSpeed(), _midi.GetMaxNoiseSpeed());
+      _midi.SetNoiseSpeed(nv);
     }else{
       OnNotesPressed(mx, my);
     }
@@ -212,6 +243,13 @@ class UiView{
     bOverBoard = rSerial.IsInside(mx,my);
     bOverCalibrate = rCalibrate.IsInside(mx,my);
   }
+  
+  void KeyPressed(char k){
+    if(k=='n'){
+      _midi.ToggleNoiseParam();
+    }
+  }
+  
   
   int GetWidth(){return _width;}
   int GetHeight(){return _height;}
