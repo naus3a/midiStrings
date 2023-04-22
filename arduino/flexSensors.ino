@@ -1,5 +1,5 @@
-const int numSensors = 2;
-const int flexPins[numSensors] = {A0, A1};
+const int numSensors = 5;
+const int flexPins[numSensors] = {A0, A1, A2, A3, A4};
 int flexValues[numSensors];
 
 ///
