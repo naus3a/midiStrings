@@ -76,7 +76,7 @@ class MidiManager{
     _midi = new MidiBus(_parent, -1, _midiOutDevice);
     
     _osc = new OscP5(_parent, _oscPortIn);
-    _netOut = new NetAddress("172.20.10.7", _oscPortOut);//("255.255.255.255", _oscPortOut);
+    _netOut = new NetAddress("255.255.255.255", _oscPortOut);
   }
   
   void MakeMidiStrings(int numStrings, boolean incrementChannel, boolean incrementNote, int startChannel, int startNote){
