@@ -14,6 +14,7 @@ void setup(){
 
 void draw(){
   serialManager.Update();
+  sensorManager.UpdateWatchDog();
   ui.Draw();
 }
 

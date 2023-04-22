@@ -76,6 +76,17 @@ class SensorManager{
     }
   }
   
+  void UpdateWatchDog(){
+    for(int i=0;i<_midi.GetNumMidiStrings();i++){
+      MidiString ms = _midi.GetMidiString(i);
+      if(ms.IsTriggered()){
+        if(!_values.get(i).IsTriggered()){
+          ms.SetNoteTriggered(false);
+        }
+      }
+    }
+  }
+  
   void Calibrate(){
     for(int i=0;i<_values.size();i++){
       _values.get(i).SetStartValueToCurValue();

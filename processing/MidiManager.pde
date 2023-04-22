@@ -75,17 +75,11 @@ class MidiManager{
     MidiBus.list();
     _midi = new MidiBus(_parent, -1, _midiOutDevice);
     
-    /*_midiStrings.add(new MidiString(12,0,127, this));
-    _midiStrings.add(new MidiString(13,0,127, this));
-    _midiStrings.add(new MidiString(14,0,127, this));
-    _midiStrings.add(new MidiString(15,0,127, this));
-    _midiStrings.add(new MidiString(16,0,127, this));*/
-    
     _osc = new OscP5(_parent, _oscPortIn);
     _netOut = new NetAddress("172.20.10.7", _oscPortOut);//("255.255.255.255", _oscPortOut);
   }
   
-  void MakeMidiStrings(int numStrings, boolean incrementChannel=false, boolean incrementNote=true, int startChannel=1, int startNote=0){
+  void MakeMidiStrings(int numStrings, boolean incrementChannel, boolean incrementNote, int startChannel, int startNote){
     int c = startChannel;
     int n = startNote;
     for(int i=0;i<numStrings;i++){
@@ -94,6 +88,8 @@ class MidiManager{
       if(incrementNote)n++;
     }
   }
+  
+  int GetNumMidiStrings(){return _midiStrings.size();}
   
   MidiString GetMidiString(int mId){
     if(mId<0 || mId>=_midiStrings.size())return null;
