@@ -7,6 +7,7 @@ class UiView{
   private int _sensorStartValueX = 140;
   private int _sensorDeltaValueX = 180;
   private int _midiNoteX = 220;
+  private int _midiChanX = 260;
   private int _noteClicked = -1;
   private Rectangle rSerial;
   private Rectangle rSensors;
@@ -101,6 +102,7 @@ class UiView{
     text("start", _sensorStartValueX, textY);
     text("delta", _sensorDeltaValueX, textY);
     text("note", _midiNoteX, textY);
+    text("chan", _midiChanX, textY);
   }
   
   private void drawSensorGrid(){
@@ -113,6 +115,8 @@ class UiView{
     x = _sensorDeltaValueX-10;
     line(x, rSensors.y, x, rSensors.GetMaxY());
     x = _midiNoteX-10;
+    line(x, rSensors.y, x, rSensors.GetMaxY());
+    x = _midiChanX-10;
     line(x, rSensors.y, x, rSensors.GetMaxY());
   }
   
@@ -136,6 +140,7 @@ class UiView{
       MidiString ms = _midi.GetMidiString(sId);
       if(ms!=null){
         text(ms.GetNoteName(), _midiNoteX, textY);
+        text(ms.GetMidiChannel(), _midiChanX, textY);
         if(ms.IsTriggered()){
           fill(0,255,0, 100);
           rect(_midiNoteX-10, y, 40, _sensorH);

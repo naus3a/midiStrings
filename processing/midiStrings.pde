@@ -4,7 +4,10 @@ SerialManager serialManager = new SerialManager(this, sensorManager);
 UiView ui;
 
 void setup(){
-  size(300, 300);
+  size(300, 600);
+  
+  midiManager.MakeMidiStrings(5, false, true, 1, 0);
+  
   serialManager.AutoConnect();
   ui = new UiView(width,height, serialManager, sensorManager, midiManager);
 }

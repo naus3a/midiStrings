@@ -29,6 +29,8 @@ class MidiString{
   
   String GetNoteName(){return _noteName;}
   
+  int GetMidiChannel(){return _note.channel;}
+  
   void SetNoteTriggered(boolean b){
     if(b==_noteTriggered)return;
     if(!DidEnoughTimePassSinceLastNoteStateChange())return;
@@ -73,11 +75,24 @@ class MidiManager{
     MidiBus.list();
     _midi = new MidiBus(_parent, -1, _midiOutDevice);
     
-    _midiStrings.add(new MidiString(1,1,127, this));
-    _midiStrings.add(new MidiString(1,2,127, this));
+    /*_midiStrings.add(new MidiString(12,0,127, this));
+    _midiStrings.add(new MidiString(13,0,127, this));
+    _midiStrings.add(new MidiString(14,0,127, this));
+    _midiStrings.add(new MidiString(15,0,127, this));
+    _midiStrings.add(new MidiString(16,0,127, this));*/
     
     _osc = new OscP5(_parent, _oscPortIn);
-    _netOut = new NetAddress("255.255.255.255", _oscPortOut);
+    _netOut = new NetAddress("172.20.10.7", _oscPortOut);//("255.255.255.255", _oscPortOut);
+  }
+  
+  void MakeMidiStrings(int numStrings, boolean incrementChannel=false, boolean incrementNote=true, int startChannel=1, int startNote=0){
+    int c = startChannel;
+    int n = startNote;
+    for(int i=0;i<numStrings;i++){
+      _midiStrings.add(new MidiString(c, n, 127, this));
+      if(incrementChannel)c++;
+      if(incrementNote)n++;
+    }
   }
   
   MidiString GetMidiString(int mId){
